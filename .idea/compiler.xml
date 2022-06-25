@@ -6,8 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Collections" />
+        <module name="particle-parser" />
+        <module name="who-wander" />
         <module name="Maverick" />
+        <module name="universe-reader" />
+        <module name="blackhole-storager" />
       </profile>
     </annotationProcessing>
   </component>
