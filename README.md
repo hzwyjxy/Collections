@@ -1,5 +1,12 @@
-Collections for everything.
-It cannot work now.
+## Collections
+
+![license](https://img.shields.io/github/license/hzwyjxy/Collections)
+
+* use HttpClient5 as http downloader
+* multi-thread support
+* easy use
+
+It can work a little.
 
 coming soon!
 
