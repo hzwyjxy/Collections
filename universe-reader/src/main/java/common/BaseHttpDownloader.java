@@ -14,7 +14,7 @@ import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 
-public class BaseHttpDownloader {
+public abstract class BaseHttpDownloader {
     public static CloseableHttpClient client = null;
     private static PoolingHttpClientConnectionManager connectionManager;
     static {
