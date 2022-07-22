@@ -1,10 +1,12 @@
 package model;
 
+import org.json.JSONObject;
+
 public class HttpRequest {
     String url;
     String type;
     String cookie;
-    String body;
+    JSONObject body;
 
     public HttpRequest(String url) {
         this.url = url;
@@ -34,11 +36,11 @@ public class HttpRequest {
         this.cookie = cookie;
     }
 
-    public String getBody() {
+    public JSONObject getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(JSONObject body) {
         this.body = body;
     }
 
