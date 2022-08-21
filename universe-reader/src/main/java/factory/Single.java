@@ -27,8 +27,8 @@ public class Single {
                 @Override
                 public void run() {
                     while (true) {
-                        AbstractResponse response= downloadRequest(requestQueue.poll());
-                        if(response !=null) {
+                        AbstractResponse response = downloadRequest(requestQueue.poll());
+                        if (response != null) {
                             responseQueue.add(response);
                         }
                     }
@@ -37,13 +37,24 @@ public class Single {
         }
     }
 
+    /**
+     * 设置下载类型
+     *
+     * @param request
+     * @return
+     */
     private static AbstractResponse downloadRequest(AbstractRequest request) {
         if (request.type.equals("get")) {
             return HttpGetDownloader.get((HttpRequest) request);
         } else if (request.type.equals("post")) {
             return HttpGetDownloader.get((HttpRequest) request);
-        } else{
+        } else {
             return null;
         }
     }
+
+    public static ConcurrentLinkedQueue<AbstractResponse> getResponseQueue() {
+        return responseQueue;
+    }
+
 }
