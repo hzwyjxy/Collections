@@ -2,9 +2,8 @@ package model;
 
 import org.json.JSONObject;
 
-public class HttpRequest {
+public class HttpRequest extends AbstractRequest {
     String url;
-    String type;
     String cookie;
     JSONObject body;
 
@@ -18,14 +17,6 @@ public class HttpRequest {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getCookie() {

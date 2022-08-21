@@ -1,6 +1,6 @@
 package model;
 
-public class HttpResponse {
+public class HttpResponse extends AbstractResponse{
     int httpCode;
     String resultPage;
 
