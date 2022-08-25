@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Single {
+public class SingleUniverse {
     private static int DEFAULT_THREAD_NUM = 10;
     private static ConcurrentLinkedQueue<AbstractRequest> requestQueue;
     private static ConcurrentLinkedQueue<AbstractResponse> responseQueue;
