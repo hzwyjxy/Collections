@@ -6,7 +6,7 @@
 * multi-thread support
 * easy use
 
-It can work a little.
+It can matrix a little.
 
 coming soon!
 

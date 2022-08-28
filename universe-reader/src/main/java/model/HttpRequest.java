@@ -7,8 +7,9 @@ public class HttpRequest extends AbstractRequest {
     String cookie;
     JSONObject body;
 
-    public HttpRequest(String url) {
-        this.url = url;
+    public HttpRequest(String type, String categeory) {
+        this.type = type;
+        this.category =categeory;
     }
 
     public String getUrl() {

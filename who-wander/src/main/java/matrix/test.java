@@ -1,14 +1,14 @@
-package work.dmhy;
+package matrix;
 
 
 import common.HttpGetDownloader;
 import model.HttpRequest;
 import model.HttpResponse;
 
-public class CrawlAllAnimations {
+public class test {
     public final static void main(final String[] args) throws Exception {
         String url ="https://www.baidu.com";
-        HttpRequest httpRequest = new HttpRequest(url);
+        HttpRequest httpRequest = new HttpRequest("","");
         HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
         System.out.println(httpResponse.getResultPage());
     }

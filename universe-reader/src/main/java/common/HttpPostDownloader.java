@@ -22,6 +22,7 @@ public class HttpPostDownloader extends BaseHttpDownloader {
             httpResponse.setHttpCode(response.getCode());
             String result = EntityUtils.toString(response.getEntity(),"utf-8");
             httpResponse.setResultPage(result);
+            httpResponse.category =httpRequest.category;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -30,7 +31,7 @@ public class HttpPostDownloader extends BaseHttpDownloader {
 
     public final static void main(final String[] args) throws Exception {
         String url ="https://www.baidu.com";
-        HttpRequest httpRequest = new HttpRequest(url);
+        HttpRequest httpRequest = new HttpRequest("POST","");
         HttpResponse httpResponse = HttpPostDownloader.get(httpRequest);
         System.out.println(httpResponse.getResultPage());
     }
