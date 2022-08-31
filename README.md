@@ -19,7 +19,7 @@ Done: base process;Index dispatch;split tasks
 TODO: More data Websites~
   
 ### 3. universe-reader 下载器  
-Done: base process;Http downloader
+Done: base process;Http downloader  
 TODO: failed-retry, so-parser(unidbg),Rpc,torrent/magnet
   
 ### 4. who-wander 任务启动器  
