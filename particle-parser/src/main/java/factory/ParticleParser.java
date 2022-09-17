@@ -59,8 +59,8 @@ public class ParticleParser {
         if (parser == null) {
             System.out.println("no parser: " + response.category);
         }
-        if (parser.checkSuccess()) {
-            parser.process();
+        if (parser.checkSuccess(response)) {
+            parser.process(response);
         }else {
             universe.send(response.request);
         }
