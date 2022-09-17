@@ -9,20 +9,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ParticleParser {
+
+    private AbstractUniverse universe;
     private ConcurrentLinkedQueue<AbstractResponse> responseQueue;
     private static int DEFAULT_THREAD_NUM = 10;
     private int threadNum;
     private Index index;
 
-    public ParticleParser(ConcurrentLinkedQueue<AbstractResponse> responseQueue, Index index) {
-        this.responseQueue = responseQueue;
+    public ParticleParser(AbstractUniverse universe, Index index) {
+        this.universe = universe;
+        this.responseQueue = universe.getResponseQueue();
         threadNum = DEFAULT_THREAD_NUM;
         this.index = index;
         startParser();
     }
 
-    public ParticleParser(ConcurrentLinkedQueue<AbstractResponse> responseQueue, Index index, int threadNum) {
-        this.responseQueue = responseQueue;
+    public ParticleParser(AbstractUniverse universe, Index index, int threadNum) {
+        this.universe = universe;
+        this.responseQueue = universe.getResponseQueue();
         this.threadNum = threadNum;
         this.index = index;
         startParser();
@@ -47,13 +51,18 @@ public class ParticleParser {
     }
 
     private void parsePresonse(AbstractResponse response) throws InterruptedException {
-        if(response == null){
+        if (response == null) {
             Thread.sleep(50);
             return;
         }
         BaseParticleParser parser = index.getIndexParser(response.category);
-        if(parser !=null && parser.checkSuccess()) {
+        if (parser == null) {
+            System.out.println("no parser: " + response.category);
+        }
+        if (parser.checkSuccess()) {
             parser.process();
+        }else {
+            universe.send(response.request);
         }
     }
 

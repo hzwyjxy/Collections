@@ -14,9 +14,11 @@ public class CrawlAllAnimations {
         httpRequest.setUrl(url);
 //        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
 //        System.out.println(httpResponse.getResultPage());
+        //生成下载器
         SingleUniverse singleUniverse = new SingleUniverse();
         singleUniverse.create();
-        new ParticleParser(singleUniverse.getResponseQueue(),new DmhyIndex());
+        //生成解析器
+        new ParticleParser(singleUniverse,new DmhyIndex());
 
         singleUniverse.send(httpRequest);
     }

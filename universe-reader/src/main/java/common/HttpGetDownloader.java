@@ -18,6 +18,7 @@ public class HttpGetDownloader extends BaseHttpDownloader {
             String result = EntityUtils.toString(response.getEntity(),"utf-8");
             httpResponse.setResultPage(result);
             httpResponse.category =httpRequest.category;
+            httpResponse.request = httpRequest;
         } catch (Exception e) {
             e.printStackTrace();
         }

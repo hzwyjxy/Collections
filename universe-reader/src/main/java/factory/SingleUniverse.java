@@ -1,6 +1,7 @@
 package factory;
 
 import common.HttpGetDownloader;
+import common.HttpPostDownloader;
 import model.AbstractRequest;
 import model.AbstractResponse;
 import model.HttpRequest;
@@ -13,7 +14,7 @@ import java.util.concurrent.Executors;
 /**
  * 单机下载器
  */
-public class SingleUniverse {
+public class SingleUniverse extends AbstractUniverse {
     private static int DEFAULT_THREAD_NUM = 10;
     private ConcurrentLinkedQueue<AbstractRequest> requestQueue;
     private ConcurrentLinkedQueue<AbstractResponse> responseQueue;
@@ -59,16 +60,18 @@ public class SingleUniverse {
         if (request.type == null || request.type.equals(RequestType.GET)) {
             return HttpGetDownloader.get((HttpRequest) request);
         } else if (request.type.equals(RequestType.POST)) {
-            return HttpGetDownloader.get((HttpRequest) request);
+            return HttpPostDownloader.post((HttpRequest) request);
         } else {
             return null;
         }
     }
 
+    @Override
     public ConcurrentLinkedQueue<AbstractResponse> getResponseQueue() {
         return responseQueue;
     }
 
+    @Override
     public void send(AbstractRequest request) {
         requestQueue.add(request);
     }

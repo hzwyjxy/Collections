@@ -10,7 +10,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 
 public class HttpPostDownloader extends BaseHttpDownloader {
 
-    public static HttpResponse get(HttpRequest httpRequest) {
+    public static HttpResponse post(HttpRequest httpRequest) {
         HttpResponse httpResponse = new HttpResponse();
         try {
             String url = httpRequest.getUrl();
@@ -23,6 +23,7 @@ public class HttpPostDownloader extends BaseHttpDownloader {
             String result = EntityUtils.toString(response.getEntity(),"utf-8");
             httpResponse.setResultPage(result);
             httpResponse.category =httpRequest.category;
+            httpResponse.request = httpRequest;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -32,7 +33,7 @@ public class HttpPostDownloader extends BaseHttpDownloader {
     public final static void main(final String[] args) throws Exception {
         String url ="https://www.baidu.com";
         HttpRequest httpRequest = new HttpRequest("POST","");
-        HttpResponse httpResponse = HttpPostDownloader.get(httpRequest);
+        HttpResponse httpResponse = HttpPostDownloader.post(httpRequest);
         System.out.println(httpResponse.getResultPage());
     }
 
