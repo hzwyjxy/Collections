@@ -22,7 +22,7 @@ public class CrawlAllAnimations {
 
 //        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
 //        System.out.println(httpResponse.getResultPage());
-        for(int i=1;i<306;i++) {
+        for(int i=1;i<320;i++) {
             singleUniverse.send(getDmhyCompleteList(i));
             Thread.sleep(500);
         }
