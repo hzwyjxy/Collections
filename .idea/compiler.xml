@@ -8,7 +8,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="particle-parser" />
         <module name="who-wander" />
-        <module name="Maverick" />
         <module name="universe-reader" />
         <module name="blackhole-storager" />
       </profile>
