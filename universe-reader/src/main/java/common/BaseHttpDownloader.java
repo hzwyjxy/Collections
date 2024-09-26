@@ -34,8 +34,8 @@ public abstract class BaseHttpDownloader {
         client = HttpClients.custom()
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(Timeout.ofSeconds(5))
-                        .setResponseTimeout(Timeout.ofSeconds(5))
+                        .setConnectTimeout(Timeout.ofSeconds(30))
+                        .setResponseTimeout(Timeout.ofSeconds(30))
                         .setCookieSpec(StandardCookieSpec.STRICT)
                         .build())
                 //设置全局下载代理

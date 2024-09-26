@@ -18,4 +18,16 @@ public class Category {
 
     public static final String ELECTION_AP_SEARCH="ELECTION_AP_SEARCH";
     public static final String ELECTION_AP_DETAIL="ELECTION_AP_DETAIL";
+
+    public static final String ELECTION_LA_SEARCH="ELECTION_LA_SEARCH";
+    public static final String ELECTION_LA_DETAIL="ELECTION_LA_DETAIL";
+
+    public static final String ELECTION_REUTERS_SEARCH="ELECTION_REUTERS_SEARCH";
+    public static final String ELECTION_REUTERS_DETAIL="ELECTION_REUTERS_DETAIL";
+
+    public static final String ELECTION_WP_SEARCH="ELECTION_WP_SEARCH";
+    public static final String ELECTION_WP_DETAIL="ELECTION_WP_DETAIL";
+
+    public static final String ELECTION_HUFFPOST_SEARCH="ELECTION_HUFFPOST_SEARCH";
+    public static final String ELECTION_HUFFPOST_DETAIL="ELECTION_HUFFPOST_DETAIL";
 }

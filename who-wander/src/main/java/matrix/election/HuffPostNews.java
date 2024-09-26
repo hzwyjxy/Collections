@@ -8,9 +8,9 @@ import model.HttpRequest;
 import org.json.JSONObject;
 
 /**
- * 洛杉矶时报
+ * 赫芬顿邮报。无搜索，取政治新闻列表
  */
-public class LaNews {
+public class HuffPostNews {
     static SingleUniverse singleUniverse;
 
     static {
@@ -26,9 +26,8 @@ public class LaNews {
 //        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
 //        System.out.println(httpResponse.getResultPage());
         for(int i=0;i<1;i++) {
-            String key = "trump trump"; //如有空格需转译
-            //singleUniverse.send(getLaSearch(key.replace(" ", "+"), 1));
-            singleUniverse.send(getLaDetail("https://www.latimes.com/politics/story/2024-09-25/2024-election-trump-mental-acuity"));
+            //singleUniverse.send(getHuffPostSearch(1));
+            singleUniverse.send(getHuffPostDetail("https://www.huffpost.com/entry/civil-fraud-verdict-trump-lawyers-appeals-court_n_66f1de67e4b0451ba129e9c8"));
             Thread.sleep(1000);
         }
     }
@@ -38,16 +37,16 @@ public class LaNews {
      * la搜索，可翻页
      * @return
      */
-    public static HttpRequest getLaSearch(String searchKey, int page) {
-        String url = "https://www.latimes.com/search?q=" + searchKey + "&p=" + page;
-        HttpRequest httpRequest = new HttpRequest("GET", Category.ELECTION_LA_SEARCH);
+    public static HttpRequest getHuffPostSearch(int page) {
+        String url = "https://www.huffpost.com/news/politics?page=1" + page;
+        HttpRequest httpRequest = new HttpRequest("GET", Category.ELECTION_HUFFPOST_SEARCH);
         httpRequest.setUrl(url);
         return httpRequest;
     }
 
     //测试详情页
-    public static HttpRequest getLaDetail(String url) {
-        HttpRequest httpRequest = new HttpRequest("GET", Category.ELECTION_LA_DETAIL);
+    public static HttpRequest getHuffPostDetail(String url) {
+        HttpRequest httpRequest = new HttpRequest("GET", Category.ELECTION_HUFFPOST_DETAIL);
         httpRequest.setUrl(url);
         httpRequest.setTransport(new JSONObject().put("searchKey", "searchKey"));
         return httpRequest;
