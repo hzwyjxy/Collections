@@ -41,7 +41,7 @@ public class GuardianListParser extends BaseParticleParser {
             System.out.println(detailUrl);
             HttpRequest request = new HttpRequest("GET", Category.ELECTION_GUARDIAN_ELECTION_DETAIL);
             request.setUrl("https://www.theguardian.com" + detailUrl);
-            //universe.send(request);
+            universe.send(request);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

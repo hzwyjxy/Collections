@@ -40,7 +40,8 @@ public class CnnSearchParser extends BaseParticleParser {
 
             HttpRequest request = new HttpRequest("GET", Category.ELECTION_CNN_DETAIL);
             request.setUrl(detailUrl);
-            //universe.send(request);
+            request.setTransport(request.getTransport());
+            universe.send(request);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

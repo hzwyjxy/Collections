@@ -40,7 +40,7 @@ public class BBCListParser extends BaseParticleParser {
 
             HttpRequest request = new HttpRequest("GET", Category.ELECTION_BBC_ELECTION_DETAIL);
             request.setUrl("https://www.bbc.com" + detailUrl);
-            //universe.send(request);
+            universe.send(request);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

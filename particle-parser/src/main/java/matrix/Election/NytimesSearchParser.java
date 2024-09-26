@@ -42,7 +42,8 @@ public class NytimesSearchParser extends BaseParticleParser {
             System.out.println(detailUrl);
             HttpRequest request = new HttpRequest("GET", Category.ELECTION_NYTIMES_DETAIL);
             request.setUrl("https://www.nytimes.com" + detailUrl);
-            //universe.send(request);
+            request.setTransport(request.getTransport());
+            universe.send(request);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

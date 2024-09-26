@@ -41,8 +41,9 @@ public class ApSearchParser extends BaseParticleParser {
             }
             System.out.println(detailUrl);
             HttpRequest request = new HttpRequest("GET", Category.ELECTION_AP_DETAIL);
-            request.setUrl("https://www.nytimes.com" + detailUrl);
-            //universe.send(request);
+            request.setUrl(detailUrl);
+            request.setTransport(request.getTransport());
+            universe.send(request);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

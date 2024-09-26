@@ -38,7 +38,7 @@ public class HuffPostSearchParser extends BaseParticleParser {
             System.out.println(detailUrl);
             HttpRequest request = new HttpRequest("GET", Category.ELECTION_HUFFPOST_DETAIL);
             request.setUrl(detailUrl);
-            //universe.send(request);
+            universe.send(request);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
