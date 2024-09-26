@@ -36,6 +36,9 @@ public class ApDetailParser extends BaseParticleParser {
             Elements ele = doc.select("div[class=RichTextStoryBody RichTextBody]");
             System.out.println(ele.text());
             //存储结果
+            //样例参考,建议存到数据库
+            //String searchKey = httpRequest.getTransport().optString("searchKey");
+            //FileUtils.appendLine("xxxx.txt", searchKey+"\t\t\t"+title+"\t"+ele);
 
         }catch (Exception e) {
             System.out.println("无数据 " + httpRequest.getUrl());
