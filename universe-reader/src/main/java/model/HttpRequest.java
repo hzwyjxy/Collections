@@ -6,6 +6,7 @@ public class HttpRequest extends AbstractRequest {
     String url;
     String cookie;
     JSONObject body;
+    JSONObject transport;
 
     public HttpRequest(String type, String categeory) {
         this.type = type;
@@ -34,6 +35,14 @@ public class HttpRequest extends AbstractRequest {
 
     public void setBody(JSONObject body) {
         this.body = body;
+    }
+
+    public JSONObject getTransport() {
+        return transport;
+    }
+
+    public void setTransport(JSONObject transport) {
+        this.transport = transport;
     }
 
 }

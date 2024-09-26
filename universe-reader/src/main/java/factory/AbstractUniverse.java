@@ -8,5 +8,5 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class AbstractUniverse {
 
     abstract ConcurrentLinkedQueue<AbstractResponse> getResponseQueue();
-    abstract void send(AbstractRequest request);
+    public abstract void send(AbstractRequest request);
 }

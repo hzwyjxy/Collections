@@ -13,6 +13,7 @@ public class HttpGetDownloader extends BaseHttpDownloader {
         try {
             String url = httpRequest.getUrl();
             HttpGet httpget = new HttpGet(url);
+            //httpget.setHeader("User-Agent", "");
             CloseableHttpResponse response = client.execute(httpget);
             httpResponse.setHttpCode(response.getCode());
             String result = EntityUtils.toString(response.getEntity(),"utf-8");

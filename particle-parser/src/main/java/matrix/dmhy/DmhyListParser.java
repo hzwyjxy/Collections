@@ -1,5 +1,6 @@
 package matrix.dmhy;
 
+import factory.AbstractUniverse;
 import index.Category;
 import matrix.BaseParticleParser;
 import model.AbstractResponse;
@@ -22,7 +23,7 @@ public class DmhyListParser extends BaseParticleParser {
     }
 
     @Override
-    public void process(AbstractResponse response) {
+    public void process(AbstractResponse response, AbstractUniverse universe) {
         System.out.println("达到dmhy");
         HttpResponse httpResponse= (HttpResponse)response;
         HttpRequest httpRequest =(HttpRequest)response.request;
