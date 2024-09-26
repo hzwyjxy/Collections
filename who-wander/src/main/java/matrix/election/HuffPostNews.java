@@ -23,12 +23,10 @@ public class HuffPostNews {
 
     public final static void main(final String[] args) throws Exception {
 
-//        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
-//        System.out.println(httpResponse.getResultPage());
-        for(int i=0;i<1;i++) {
-            //singleUniverse.send(getHuffPostSearch(1));
-            singleUniverse.send(getHuffPostDetail("https://www.huffpost.com/entry/civil-fraud-verdict-trump-lawyers-appeals-court_n_66f1de67e4b0451ba129e9c8"));
-            Thread.sleep(1000);
+        for(int i=0;i<100;i++) {
+            singleUniverse.send(getHuffPostSearch(1));
+            //singleUniverse.send(getHuffPostDetail("https://www.huffpost.com/entry/civil-fraud-verdict-trump-lawyers-appeals-court_n_66f1de67e4b0451ba129e9c8"));
+            Thread.sleep(1000 * 10);
         }
     }
 

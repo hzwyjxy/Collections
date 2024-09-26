@@ -22,10 +22,10 @@ public class BBCNews {
 
 //        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
 //        System.out.println(httpResponse.getResultPage());
-        for(int i=0;i<1;i++) {
+        for(int i=0;i<12;i++) {
             //singleUniverse.send(getBBCSearch(i));
             singleUniverse.send(getBBCDetail("https://www.bbc.com/news/articles/c23k0d09d4do"));
-            Thread.sleep(500);
+            Thread.sleep(1000 * 10);
         }
     }
 

@@ -4,8 +4,11 @@ import factory.ParticleParser;
 import factory.SingleUniverse;
 import index.Category;
 import index.all.ElectionIndex;
+import matrix.election.seed.GenerateSeeds;
 import model.HttpRequest;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * 洛杉矶时报
@@ -23,13 +26,12 @@ public class LaNews {
 
     public final static void main(final String[] args) throws Exception {
 
-//        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
-//        System.out.println(httpResponse.getResultPage());
-        for(int i=0;i<1;i++) {
-            String key = "trump trump"; //如有空格需转译
-            //singleUniverse.send(getLaSearch(key.replace(" ", "+"), 1));
-            singleUniverse.send(getLaDetail("https://www.latimes.com/politics/story/2024-09-25/2024-election-trump-mental-acuity"));
-            Thread.sleep(1000);
+        List<String> seeds = GenerateSeeds.getAllSeeds();
+        for(String seed : seeds) {
+            String key = seed; //"trump trump"; //如有空格需转译
+            singleUniverse.send(getLaSearch(key.replace(" ", "+"), 1));
+            //singleUniverse.send(getLaDetail("https://www.latimes.com/politics/story/2024-09-25/2024-election-trump-mental-acuity"));
+            Thread.sleep(1000 * 10);
         }
     }
 
@@ -42,6 +44,7 @@ public class LaNews {
         String url = "https://www.latimes.com/search?q=" + searchKey + "&p=" + page;
         HttpRequest httpRequest = new HttpRequest("GET", Category.ELECTION_LA_SEARCH);
         httpRequest.setUrl(url);
+        httpRequest.setTransport(new JSONObject().put("searchKey", searchKey));
         return httpRequest;
     }
 

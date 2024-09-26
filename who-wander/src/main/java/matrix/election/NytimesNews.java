@@ -4,8 +4,11 @@ import factory.ParticleParser;
 import factory.SingleUniverse;
 import index.Category;
 import index.all.ElectionIndex;
+import matrix.election.seed.GenerateSeeds;
 import model.HttpRequest;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * 纽约时报,正文详情页有IP级风控，只能显示一半文本，暂未处理
@@ -23,13 +26,12 @@ public class NytimesNews {
 
     public final static void main(final String[] args) throws Exception {
 
-//        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
-//        System.out.println(httpResponse.getResultPage());
-        for(int i=0;i<1;i++) {
-            String key = "trump"; //如有空格需转译
-            //singleUniverse.send(getNytimesSearch(key.replace(" ", "%20")));
-            singleUniverse.send(getNytimesDetail("https://www.nytimes.com/2024/09/19/business/trump-media-lockup-expires.html"));
-            Thread.sleep(1000);
+        List<String> seeds = GenerateSeeds.getAllSeeds();
+        for(String seed : seeds) {
+            String key = seed; //"trump"; //如有空格需转译
+            singleUniverse.send(getNytimesSearch(key.replace(" ", "%20")));
+            //singleUniverse.send(getNytimesDetail("https://www.nytimes.com/2024/09/19/business/trump-media-lockup-expires.html"));
+            Thread.sleep(1000 * 10);
         }
     }
 
@@ -41,6 +43,7 @@ public class NytimesNews {
         String url = "https://www.nytimes.com/search?query=" + searchKey;
         HttpRequest httpRequest = new HttpRequest("GET", Category.ELECTION_NYTIMES_SEARCH);
         httpRequest.setUrl(url);
+        httpRequest.setTransport(new JSONObject().put("searchKey", searchKey));
         return httpRequest;
     }
 

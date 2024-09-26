@@ -22,12 +22,9 @@ public class GuardianNews {
     }
 
     public final static void main(final String[] args) throws Exception {
-
-//        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
-//        System.out.println(httpResponse.getResultPage());
-        for(int i=0;i<1;i++) {
-            //singleUniverse.send(getGuardianSearch(i));
-            singleUniverse.send(getGuardianDetail("https://www.theguardian.com/us-news/2024/sep/22/national-security-officials-endorse-harris"));
+        for(int i=0;i<100;i++) {
+            singleUniverse.send(getGuardianSearch(i));
+            //singleUniverse.send(getGuardianDetail("https://www.theguardian.com/us-news/2024/sep/22/national-security-officials-endorse-harris"));
             Thread.sleep(1000 * 10);
         }
     }

@@ -4,8 +4,11 @@ import factory.ParticleParser;
 import factory.SingleUniverse;
 import index.Category;
 import index.all.ElectionIndex;
+import matrix.election.seed.GenerateSeeds;
 import model.HttpRequest;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * 路透社，详情有强浏览器js检测，只能拿到搜索结果，暂无法获取详情。思路：用selinium或者puppeteer应该能过（开发成本高）
@@ -23,13 +26,12 @@ public class ReutersNews {
 
     public final static void main(final String[] args) throws Exception {
 
-//        HttpResponse httpResponse = HttpGetDownloader.get(httpRequest);
-//        System.out.println(httpResponse.getResultPage());
-        for(int i=0;i<1;i++) {
-            String key = "trump trump"; //如有空格需转译
-            //singleUniverse.send(getReutersSearch(key.replace(" ", "%20")));
-            singleUniverse.send(getReutersDetail("https://www.reuters.com/world/biden-announces-8-billion-military-aid-ukraine-2024-09-26/"));
-            Thread.sleep(1000);
+        List<String> seeds = GenerateSeeds.getAllSeeds();
+        for(String seed : seeds) {
+            String key = seed; // "trump trump"; //如有空格需转译
+            singleUniverse.send(getReutersSearch(key.replace(" ", "%20")));
+            //singleUniverse.send(getReutersDetail("https://www.reuters.com/world/biden-announces-8-billion-military-aid-ukraine-2024-09-26/"));
+            Thread.sleep(1000 * 10);
         }
     }
 
@@ -44,6 +46,7 @@ public class ReutersNews {
                 "%22%3A%22reuters%22%7D&d=216&_website=reuters";
         HttpRequest httpRequest = new HttpRequest("GET", Category.ELECTION_REUTERS_SEARCH);
         httpRequest.setUrl(url);
+        httpRequest.setTransport(new JSONObject().put("searchKey", searchKey));
         return httpRequest;
     }
 
