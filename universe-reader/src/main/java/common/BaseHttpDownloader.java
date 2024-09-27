@@ -7,7 +7,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
-import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.pool.PoolConcurrencyPolicy;
 import org.apache.hc.core5.pool.PoolReusePolicy;
@@ -39,7 +38,7 @@ public abstract class BaseHttpDownloader {
                         .setCookieSpec(StandardCookieSpec.STRICT)
                         .build())
                 //设置全局下载代理
-                .setProxy(new HttpHost("127.0.0.1", 10808))
+                //.setProxy(new HttpHost("127.0.0.1", 10808))
                 .build();
     }
 }
