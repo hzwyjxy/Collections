@@ -4,11 +4,8 @@ import factory.ParticleParser;
 import factory.SingleUniverse;
 import index.Category;
 import index.all.ElectionIndex;
-import matrix.election.seed.GenerateSeeds;
 import model.HttpRequest;
 import org.json.JSONObject;
-
-import java.util.List;
 
 /**
  * 华盛顿邮报, tip：ttl设置成30s才能下载，可能是网不好
@@ -25,14 +22,15 @@ public class WpNews {
     }
 
     public final static void main(final String[] args) throws Exception {
-
+        singleUniverse.send(getWpDetail("https://www.washingtonpost.com/politics/2024/10/03/harris-liz-cheney-wisconsin-campaign-ripon-republican/"));
+        //System.exit(0);
+        /*
         List<String> seeds = GenerateSeeds.getAllSeeds();
         for(String seed : seeds) {
             String key = seed; //"trump trump"; //如有空格需转译
-            singleUniverse.send(getWpSearch(key));
-            //singleUniverse.send(getWpDetail("https://www.washingtonpost.com/elections/2024/09/25/trump-women-voters-harris/"));
+            //singleUniverse.send(getWpSearch(key));
             Thread.sleep(1000 * 10);
-        }
+        }*/
     }
 
     /**

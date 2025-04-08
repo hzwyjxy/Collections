@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="single-player" />
         <module name="particle-parser" />
         <module name="who-wander" />
         <module name="universe-reader" />

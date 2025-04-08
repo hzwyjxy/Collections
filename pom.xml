@@ -13,6 +13,7 @@
         <module>particle-parser</module>
         <module>blackhole-storager</module>
         <module>who-wander</module>
+        <module>single-player</module>
     </modules>
 
     <dependencies>

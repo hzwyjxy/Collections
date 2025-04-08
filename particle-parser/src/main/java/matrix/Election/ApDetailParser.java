@@ -41,6 +41,7 @@ public class ApDetailParser extends BaseParticleParser {
             //FileUtils.appendLine("xxxx.txt", searchKey+"\t\t\t"+title+"\t"+ele);
 
         }catch (Exception e) {
+            e.printStackTrace();
             System.out.println("无数据 " + httpRequest.getUrl());
         }
 
