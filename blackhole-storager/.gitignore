@@ -1,0 +1,72 @@
+# Blackhole-Storager Git忽略配置
+# 该文件定义了哪些文件和目录不应该被Git版本控制
+
+# 数据库配置文件（包含敏感信息）
+/resource/
+/resource/*.yml
+/resource/*.yaml
+/resource/*.properties
+/resource/*.conf
+
+# 本地数据库文件
+*.db
+*.sqlite
+*.sqlite3
+/data/
+/database/
+
+# 日志文件
+*.log
+logs/
+logging/
+
+# 临时文件
+temp/
+tmp/
+*.tmp
+*.temp
+
+# IDE配置文件
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse配置文件
+.project
+.classpath
+.settings/
+
+# 编译输出
+target/
+build/
+out/
+
+# 包文件
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 测试数据
+test-data/
+test_data/
+sample-data/
+sample_data/
+
+# 环境特定文件（使用环境变量替代）
+.env
+.env.local
+.env.*.local

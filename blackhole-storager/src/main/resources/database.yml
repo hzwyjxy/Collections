@@ -1,0 +1,320 @@
+# Blackhole存储管理器 - 数据库配置文件
+# 这个文件包含了所有支持的数据库类型的配置示例
+# 
+# 使用方法:
+# 1. 复制对应数据库的配置段，修改参数
+# 2. 确保数据库服务已启动
+# 3. 在代码中使用配置名称获取适配器
+#
+# 示例代码:
+#   BlackholeStorageManager manager = BlackholeStorageManager.getInstance();
+#   manager.initializeFromClasspath("database.yml");
+#   DatabaseStorage adapter = manager.getSQLiteAdapter("sqlite-dev");
+
+# 全局配置
+global:
+  # 默认使用的数据库配置
+  default_database: "sqlite-dev"
+  
+  # 健康检查配置
+  health_check:
+    enabled: true
+    interval_seconds: 30
+    timeout_seconds: 5
+    retry_count: 3
+  
+  # 慢查询配置
+  slow_query:
+    enabled: true
+    threshold_ms: 1000
+    log_level: "WARN"
+  
+  # SQL日志配置
+  sql_log:
+    enabled: true
+    log_level: "INFO"
+    include_params: true
+    max_length: 1000
+  
+  # 重试配置
+  retry:
+    enabled: true
+    max_attempts: 3
+    delay_ms: 1000
+    backoff_multiplier: 2.0
+  
+  # 监控配置
+  monitoring:
+    enabled: true
+    metrics_enabled: true
+    jmx_enabled: false
+
+# SQLite数据库配置
+sqlite-dev:
+  type: "sqlite"
+  name: "sqlite-dev"
+  enabled: true
+  connection:
+    url: "jdbc:sqlite:blackhole_dev.db"
+    driver_class: "org.sqlite.JDBC"
+    username: ""
+    password: ""
+    # SQLite特定配置
+    properties:
+      busy_timeout: "30000"
+      foreign_keys: "on"
+      journal_mode: "WAL"
+      synchronous: "NORMAL"
+      cache_size: "10000"
+      temp_store: "memory"
+  pool:
+    max_pool_size: 10
+    min_pool_size: 1
+    connection_timeout: 30000
+    idle_timeout: 600000
+    max_lifetime: 1800000
+    leak_detection_threshold: 60000
+    connection_test_query: "SELECT 1"
+    auto_commit: false
+
+# MySQL数据库配置
+mysql-dev:
+  type: "mysql"
+  name: "mysql-dev"
+  enabled: true
+  connection:
+    url: "jdbc:mysql://localhost:3306/blackhole_dev?useSSL=false&serverTimezone=UTC&characterEncoding=utf8mb4"
+    driver_class: "com.mysql.cj.jdbc.Driver"
+    username: "root"
+    password: "password"
+    # MySQL特定配置
+    properties:
+      useUnicode: "true"
+      characterEncoding: "utf8mb4"
+      serverTimezone: "UTC"
+      useSSL: "false"
+      allowPublicKeyRetrieval: "true"
+      rewriteBatchedStatements: "true"
+      cachePrepStmts: "true"
+      prepStmtCacheSize: "250"
+      prepStmtCacheSqlLimit: "2048"
+      useServerPrepStmts: "true"
+  pool:
+    max_pool_size: 20
+    min_pool_size: 5
+    connection_timeout: 30000
+    idle_timeout: 600000
+    max_lifetime: 1800000
+    leak_detection_threshold: 60000
+    connection_test_query: "SELECT 1"
+    auto_commit: false
+
+# Redis数据库配置
+redis-dev:
+  type: "redis"
+  name: "redis-dev"
+  enabled: true
+  connection:
+    host: "localhost"
+    port: 6379
+    timeout: 2000
+    password: ""
+    database: 0
+    # Redis连接池配置
+    pool:
+      max_total: 20
+      max_idle: 10
+      min_idle: 5
+      max_wait_millis: 3000
+      test_on_borrow: true
+      test_on_return: true
+      test_while_idle: true
+      min_evictable_idle_time_millis: 600000
+      time_between_eviction_runs_millis: 30000
+      num_tests_per_eviction_run: 10
+    # Redis特定配置
+    properties:
+      tcp_no_delay: "true"
+      reuse_address: "true"
+      keep_alive: "true"
+      so_timeout: "2000"
+      connection_timeout: "2000"
+      socket_timeout: "2000"
+
+# Hive数据库配置 (占位符 - 需要实现Hive适配器)
+hive-dev:
+  type: "hive"
+  name: "hive-dev"
+  enabled: false  # 默认禁用，需要手动启用
+  connection:
+    url: "jdbc:hive2://localhost:10000/default"
+    driver_class: "org.apache.hive.jdbc.HiveDriver"
+    username: "hive"
+    password: ""
+    # Hive特定配置
+    properties:
+      hive_exec_dynamic_partition: "true"
+      hive_exec_dynamic_partition_mode: "nonstrict"
+      hive_support_concurrency: "true"
+      hive_txn_manager: "org.apache.hadoop.hive.ql.lockmgr.DbTxnManager"
+  pool:
+    max_pool_size: 10
+    min_pool_size: 2
+    connection_timeout: 30000
+    idle_timeout: 600000
+    max_lifetime: 1800000
+    leak_detection_threshold: 60000
+    connection_test_query: "SELECT 1"
+    auto_commit: false
+
+# HBase数据库配置 (占位符 - 需要实现HBase适配器)
+hbase-dev:
+  type: "hbase"
+  name: "hbase-dev"
+  enabled: false  # 默认禁用，需要手动启用
+  connection:
+    zookeeper_quorum: "localhost"
+    zookeeper_port: 2181
+    zookeeper_znode_parent: "/hbase"
+    master: "localhost:16000"
+    # HBase特定配置
+    properties:
+      hbase_client_retries_number: "3"
+      hbase_client_pause: "1000"
+      hbase_rpc_timeout: "60000"
+      hbase_client_operation_timeout: "30000"
+      hbase_client_scanner_timeout_period: "60000"
+  pool:
+    max_pool_size: 20
+    min_pool_size: 5
+    connection_timeout: 30000
+    idle_timeout: 600000
+    max_lifetime: 1800000
+    leak_detection_threshold: 60000
+    connection_test_query: ""
+    auto_commit: true
+
+# 测试数据库配置
+sqlite-test:
+  type: "sqlite"
+  name: "sqlite-test"
+  enabled: true
+  connection:
+    url: "jdbc:sqlite::memory:"
+    driver_class: "org.sqlite.JDBC"
+    username: ""
+    password: ""
+    properties:
+      busy_timeout: "30000"
+      foreign_keys: "on"
+  pool:
+    max_pool_size: 5
+    min_pool_size: 1
+    connection_timeout: 5000
+    idle_timeout: 300000
+    max_lifetime: 900000
+    leak_detection_threshold: 30000
+    connection_test_query: "SELECT 1"
+    auto_commit: false
+
+# 生产环境SQLite配置 (建议使用外部文件存储)
+sqlite-prod:
+  type: "sqlite"
+  name: "sqlite-prod"
+  enabled: false  # 生产环境默认禁用SQLite
+  connection:
+    url: "jdbc:sqlite:/data/blackhole/prod.db"
+    driver_class: "org.sqlite.JDBC"
+    username: ""
+    password: ""
+    properties:
+      busy_timeout: "30000"
+      foreign_keys: "on"
+      journal_mode: "WAL"
+      synchronous: "FULL"
+      cache_size: "20000"
+      temp_store: "memory"
+      locking_mode: "NORMAL"
+  pool:
+    max_pool_size: 30
+    min_pool_size: 5
+    connection_timeout: 30000
+    idle_timeout: 900000
+    max_lifetime: 3600000
+    leak_detection_threshold: 120000
+    connection_test_query: "SELECT 1"
+    auto_commit: false
+
+# 生产环境MySQL配置
+mysql-prod:
+  type: "mysql"
+  name: "mysql-prod"
+  enabled: false  # 生产环境默认禁用，需要手动启用
+  connection:
+    url: "jdbc:mysql://prod-mysql-server:3306/blackhole_prod?useSSL=true&serverTimezone=UTC&characterEncoding=utf8mb4"
+    driver_class: "com.mysql.cj.jdbc.Driver"
+    username: "${MYSQL_USER:blackhole_user}"
+    password: "${MYSQL_PASSWORD:secure_password}"
+    properties:
+      useUnicode: "true"
+      characterEncoding: "utf8mb4"
+      serverTimezone: "UTC"
+      useSSL: "true"
+      requireSSL: "true"
+      verifyServerCertificate: "true"
+      allowPublicKeyRetrieval: "false"
+      rewriteBatchedStatements: "true"
+      cachePrepStmts: "true"
+      prepStmtCacheSize: "500"
+      prepStmtCacheSqlLimit: "4096"
+      useServerPrepStmts: "true"
+      maintainTimeStats: "false"
+      useLocalSessionState: "true"
+      useLocalTransactionState: "true"
+      useBulkStmts: "true"
+  pool:
+    max_pool_size: 50
+    min_pool_size: 10
+    connection_timeout: 30000
+    idle_timeout: 600000
+    max_lifetime: 1800000
+    leak_detection_threshold: 60000
+    connection_test_query: "SELECT 1"
+    auto_commit: false
+
+# 生产环境Redis配置
+redis-prod:
+  type: "redis"
+  name: "redis-prod"
+  enabled: false  # 生产环境默认禁用，需要手动启用
+  connection:
+    host: "${REDIS_HOST:prod-redis-server}"
+    port: ${REDIS_PORT:6379}
+    timeout: 2000
+    password: "${REDIS_PASSWORD:secure_redis_password}"
+    database: ${REDIS_DB:0}
+    ssl: true
+    # Redis连接池配置（生产环境优化）
+    pool:
+      max_total: 100
+      max_idle: 50
+      min_idle: 20
+      max_wait_millis: 5000
+      test_on_borrow: true
+      test_on_return: true
+      test_while_idle: true
+      min_evictable_idle_time_millis: 600000
+      time_between_eviction_runs_millis: 30000
+      num_tests_per_eviction_run: 10
+      block_when_exhausted: true
+      jmx_enabled: false
+    # Redis特定配置（生产环境优化）
+    properties:
+      tcp_no_delay: "true"
+      reuse_address: "true"
+      keep_alive: "true"
+      so_timeout: "2000"
+      connection_timeout: "2000"
+      socket_timeout: "2000"
+      ssl: "true"
+      hostname_verification: "true"
