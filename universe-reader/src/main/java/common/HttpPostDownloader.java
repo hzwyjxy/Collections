@@ -18,6 +18,7 @@ public class HttpPostDownloader extends BaseHttpDownloader {
             //设置post内容
             StringEntity stringEntity = new StringEntity(httpRequest.getBody().toString(), ContentType.APPLICATION_JSON);
             httpPost.setEntity(stringEntity);
+            applyHeaders(httpPost, httpRequest);
             CloseableHttpResponse response = client.execute(httpPost);
             httpResponse.setHttpCode(response.getCode());
             String result = EntityUtils.toString(response.getEntity(),"utf-8");
