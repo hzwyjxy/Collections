@@ -4,9 +4,11 @@ import database.BlackholeStorageManager;
 import database.adapter.MySQLAdapter;
 import database.config.ConfigurationManager;
 import database.core.DatabaseStorage;
+import database.core.Page;
 import database.core.RowMapper;
 import database.core.StorageException;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -162,21 +164,19 @@ public class MySQLExample {
      * 创建产品表
      */
     private void createProductTable(DatabaseStorage adapter) throws StorageException {
-        String createTableSql = """
-            CREATE TABLE IF NOT EXISTS products (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(200) NOT NULL,
-                category VARCHAR(100) NOT NULL,
-                price DECIMAL(10,2) NOT NULL,
-                stock INT DEFAULT 0,
-                description TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                INDEX idx_category (category),
-                INDEX idx_name (name),
-                INDEX idx_price (price)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        """;
+        String createTableSql = "CREATE TABLE IF NOT EXISTS products ("
+            + "id BIGINT AUTO_INCREMENT PRIMARY KEY, "
+            + "name VARCHAR(200) NOT NULL, "
+            + "category VARCHAR(100) NOT NULL, "
+            + "price DECIMAL(10,2) NOT NULL, "
+            + "stock INT DEFAULT 0, "
+            + "description TEXT, "
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+            + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, "
+            + "INDEX idx_category (category), "
+            + "INDEX idx_name (name), "
+            + "INDEX idx_price (price)"
+            + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         adapter.update(createTableSql);
         System.out.println("产品表创建成功");
@@ -187,10 +187,7 @@ public class MySQLExample {
      */
     private void insertProducts(DatabaseStorage adapter) throws StorageException {
         // 单条插入
-        String insertSql = """
-            INSERT INTO products (name, category, price, stock, description) 
-            VALUES (?, ?, ?, ?, ?)
-        """;
+        String insertSql = "INSERT INTO products (name, category, price, stock, description) VALUES (?, ?, ?, ?, ?)";
         
         adapter.insert(insertSql, "iPhone 15 Pro", "手机", 7999.00, 100, "苹果最新旗舰手机");
         adapter.insert(insertSql, "MacBook Pro 14", "笔记本", 14999.00, 50, "苹果专业级笔记本电脑");
@@ -201,10 +198,7 @@ public class MySQLExample {
         System.out.println("插入5条产品数据成功");
         
         // 批量插入
-        String batchInsertSql = """
-            INSERT INTO products (name, category, price, stock, description) 
-            VALUES (?, ?, ?, ?, ?)
-        """;
+        String batchInsertSql = "INSERT INTO products (name, category, price, stock, description) VALUES (?, ?, ?, ?, ?)";
         List<Object[]> batchParams = Arrays.asList(
             new Object[]{"Samsung Galaxy S24", "手机", 5999.00, 120, "三星最新旗舰手机"},
             new Object[]{"Dell XPS 13", "笔记本", 8999.00, 30, "戴尔超薄笔记本电脑"},
@@ -279,21 +273,13 @@ public class MySQLExample {
         ProductRowMapper rowMapper = new ProductRowMapper();
         
         // 价格范围查询
-        String priceRangeSql = """
-            SELECT * FROM products 
-            WHERE price BETWEEN ? AND ? 
-            ORDER BY price ASC
-        """;
+        String priceRangeSql = "SELECT * FROM products WHERE price BETWEEN ? AND ? ORDER BY price ASC";
         List<Product> midRangeProducts = adapter.queryMultiple(priceRangeSql, rowMapper, 2000.00, 5000.00);
         System.out.println("价格区间2000-5000的产品（共" + midRangeProducts.size() + "条）:");
         midRangeProducts.forEach(System.out::println);
         
         // 多条件查询
-        String multiConditionSql = """
-            SELECT * FROM products 
-            WHERE category = ? AND price < ? AND stock > ?
-            ORDER BY price DESC
-        """;
+        String multiConditionSql = "SELECT * FROM products WHERE category = ? AND price < ? AND stock > ? ORDER BY price DESC";
         List<Product> affordablePhones = adapter.queryMultiple(multiConditionSql, rowMapper, "手机", 7000.00, 50);
         System.out.println("价格低于7000且库存充足（>50）的手机产品:");
         affordablePhones.forEach(System.out::println);
@@ -313,19 +299,19 @@ public class MySQLExample {
         String querySql = "SELECT * FROM products ORDER BY price DESC";
         
         // 查询第1页，每页4条
-        var page1 = adapter.queryPage(querySql, rowMapper, 1, 4);
+        Page<Product> page1 = adapter.queryPage(querySql, rowMapper, 1, 4);
         System.out.println("第1页结果（共" + page1.getTotalElements() + "条，" + page1.getTotalPages() + "页）:");
         page1.getContent().forEach(System.out::println);
         
         // 查询第2页，每页4条
         if (page1.hasNext()) {
-            var page2 = adapter.queryPage(querySql, rowMapper, 2, 4);
+            Page<Product> page2 = adapter.queryPage(querySql, rowMapper, 2, 4);
             System.out.println("第2页结果:");
             page2.getContent().forEach(System.out::println);
         }
         
         // 查询最后一页
-        var lastPage = adapter.queryPage(querySql, rowMapper, page1.getTotalPages(), 4);
+        Page<Product> lastPage = adapter.queryPage(querySql, rowMapper, page1.getTotalPages(), 4);
         System.out.println("最后一页（第" + page1.getTotalPages() + "页）:");
         lastPage.getContent().forEach(System.out::println);
     }
@@ -383,7 +369,7 @@ public class MySQLExample {
             System.out.println("MySQL版本: " + version);
             
             // 获取服务器状态
-            String status = mysqlAdapter.getServerStatus();
+            Map<String, String> status = mysqlAdapter.getServerStatus();
             System.out.println("服务器状态: " + status);
             
             // 获取数据库统计信息
@@ -401,7 +387,7 @@ public class MySQLExample {
             
             // 执行SHOW命令
             String showDatabases = "SHOW DATABASES";
-            var databases = mysqlAdapter.queryMultiple(showDatabases, (rs, rowNum) -> rs.getString(1));
+            List<String> databases = mysqlAdapter.queryMultiple(showDatabases, (rs, rowNum) -> rs.getString(1));
             System.out.println("可用数据库: " + databases);
         }
     }

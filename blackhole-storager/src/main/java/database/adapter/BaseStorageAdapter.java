@@ -160,7 +160,7 @@ public abstract class BaseStorageAdapter implements DatabaseStorage {
         
         // 获取总记录数
         String countSql = "SELECT COUNT(*) FROM (" + sql + ") AS total";
-        long totalElements = querySingle(countSql, rs -> rs.getLong(1), params);
+        long totalElements = querySingle(countSql, (rs, rowNum) -> rs.getLong(1), params);
         
         // 执行分页查询
         String pageSql = addPagination(sql, pageNum, pageSize);

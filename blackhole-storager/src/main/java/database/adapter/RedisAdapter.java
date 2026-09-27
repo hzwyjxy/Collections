@@ -1,12 +1,14 @@
 package database.adapter;
 
 import database.config.DatabaseConfig;
+import database.core.DatabaseStorage;
 import database.core.Page;
 import database.core.RowMapper;
 import database.core.StorageException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.args.ListPosition;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.sql.Connection;
@@ -391,6 +393,296 @@ public class RedisAdapter implements DatabaseStorage {
             logger.error("Redis TTL operation failed for key: {}", key, e);
             throw new StorageException("REDIS_OPERATION_FAILED", "Failed to get TTL", e);
         }
+    }
+    
+    /**
+     * 设置字符串值并指定过期时间（秒）
+     * 
+     * @param key 键
+     * @param seconds 过期时间（秒）
+     * @param value 值
+     * @return 成功返回OK
+     */
+    public String setex(String key, long seconds, String value) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.setex(key, seconds, value);
+        } catch (JedisException e) {
+            logger.error("Redis SETEX operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to set value with expiration", e);
+        }
+    }
+    
+    /**
+     * 将键的值自增1
+     * 
+     * @param key 键
+     * @return 自增后的值
+     */
+    public long incr(String key) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.incr(key);
+        } catch (JedisException e) {
+            logger.error("Redis INCR operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to increment value", e);
+        }
+    }
+    
+    /**
+     * 将键的值增加指定数值
+     * 
+     * @param key 键
+     * @param increment 增量
+     * @return 增加后的值
+     */
+    public long incrBy(String key, long increment) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.incrBy(key, increment);
+        } catch (JedisException e) {
+            logger.error("Redis INCRBY operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to increment value", e);
+        }
+    }
+    
+    /**
+     * 将键的值减少指定数值
+     * 
+     * @param key 键
+     * @param decrement 减量
+     * @return 减少后的值
+     */
+    public long decrBy(String key, long decrement) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.decrBy(key, decrement);
+        } catch (JedisException e) {
+            logger.error("Redis DECRBY operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to decrement value", e);
+        }
+    }
+    
+    /**
+     * 从列表右端推入元素
+     * 
+     * @param key 列表键
+     * @param values 要添加的值
+     * @return 列表长度
+     */
+    public long rpush(String key, String... values) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.rpush(key, values);
+        } catch (JedisException e) {
+            logger.error("Redis RPUSH operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to push to list", e);
+        }
+    }
+    
+    /**
+     * 设置列表指定索引位置的元素
+     * 
+     * @param key 列表键
+     * @param index 索引
+     * @param value 值
+     * @return 成功返回OK
+     */
+    public String lset(String key, long index, String value) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.lset(key, index, value);
+        } catch (JedisException e) {
+            logger.error("Redis LSET operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to set list element", e);
+        }
+    }
+    
+    /**
+     * 在列表指定元素前或后插入元素
+     * 
+     * @param key 列表键
+     * @param where 位置（BEFORE/AFTER）
+     * @param pivot 基准元素
+     * @param value 要插入的值
+     * @return 插入后列表长度，-1表示基准元素不存在
+     */
+    public long linsert(String key, String where, String pivot, String value) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            ListPosition position = "AFTER".equalsIgnoreCase(where) ? ListPosition.AFTER : ListPosition.BEFORE;
+            return jedis.linsert(key, position, pivot, value);
+        } catch (JedisException e) {
+            logger.error("Redis LINSERT operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to insert into list", e);
+        }
+    }
+    
+    /**
+     * 裁剪列表，仅保留指定范围内的元素
+     * 
+     * @param key 列表键
+     * @param start 开始索引
+     * @param stop 结束索引
+     * @return 成功返回OK
+     */
+    public String ltrim(String key, long start, long stop) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.ltrim(key, start, stop);
+        } catch (JedisException e) {
+            logger.error("Redis LTRIM operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to trim list", e);
+        }
+    }
+    
+    /**
+     * 从集合中移除元素
+     * 
+     * @param key 集合键
+     * @param members 要移除的成员
+     * @return 移除成功的成员数量
+     */
+    public long srem(String key, String... members) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.srem(key, members);
+        } catch (JedisException e) {
+            logger.error("Redis SREM operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to remove from set", e);
+        }
+    }
+    
+    /**
+     * 判断哈希字段是否存在
+     * 
+     * @param key 哈希键
+     * @param field 字段名
+     * @return true表示存在
+     */
+    public boolean hexists(String key, String field) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.hexists(key, field);
+        } catch (JedisException e) {
+            logger.error("Redis HEXISTS operation failed for key: {}, field: {}", key, field, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to check hash field", e);
+        }
+    }
+    
+    /**
+     * 删除哈希字段
+     * 
+     * @param key 哈希键
+     * @param fields 要删除的字段
+     * @return 删除的字段数量
+     */
+    public long hdel(String key, String... fields) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.hdel(key, fields);
+        } catch (JedisException e) {
+            logger.error("Redis HDEL operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to delete hash fields", e);
+        }
+    }
+    
+    /**
+     * 向有序集合添加成员
+     * 
+     * @param key 有序集合键
+     * @param score 分数
+     * @param member 成员
+     * @return 新增成员数量
+     */
+    public long zadd(String key, double score, String member) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.zadd(key, score, member);
+        } catch (JedisException e) {
+            logger.error("Redis ZADD operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to add to sorted set", e);
+        }
+    }
+    
+    /**
+     * 从有序集合移除成员
+     * 
+     * @param key 有序集合键
+     * @param members 要移除的成员
+     * @return 移除成功的成员数量
+     */
+    public long zrem(String key, String... members) throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.zrem(key, members);
+        } catch (JedisException e) {
+            logger.error("Redis ZREM operation failed for key: {}", key, e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to remove from sorted set", e);
+        }
+    }
+    
+    /**
+     * 获取当前数据库的键数量
+     * 
+     * @return 键数量
+     */
+    public long dbSize() throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.dbSize();
+        } catch (JedisException e) {
+            logger.error("Redis DBSIZE operation failed", e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to get database size", e);
+        }
+    }
+    
+    /**
+     * 获取Redis服务器信息（别名方法）
+     * 
+     * @return 服务器信息
+     */
+    public String info() throws StorageException {
+        checkInitialized();
+        
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.info();
+        } catch (JedisException e) {
+            logger.error("Redis INFO operation failed", e);
+            throw new StorageException("REDIS_OPERATION_FAILED", "Failed to get server info", e);
+        }
+    }
+    
+    /**
+     * 获取连接池统计信息
+     * 
+     * @return 连接池统计信息映射
+     */
+    public Map<String, Object> getConnectionPoolStats() {
+        Map<String, Object> stats = new HashMap<>();
+        
+        if (jedisPool != null && !jedisPool.isClosed()) {
+            stats.put("activeConnections", getActiveConnections());
+            stats.put("idleConnections", getIdleConnections());
+            stats.put("maxConnections", getMaxConnections());
+            stats.put("waitingForConnection", getWaitingForConnection());
+        }
+        
+        return stats;
     }
     
     /**

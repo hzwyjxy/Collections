@@ -18,7 +18,7 @@ public class PackageTest {
             BlackholeStorageManager manager = BlackholeStorageManager.getInstance();
             System.out.println("SUCCESS: BlackholeStorageManager imported");
             
-            ConfigurationManager configManager = new ConfigurationManager();
+            ConfigurationManager.getAllConfigs();
             System.out.println("SUCCESS: ConfigurationManager imported");
             
             System.out.println("=== All package imports test passed ===");

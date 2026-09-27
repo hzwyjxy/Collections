@@ -1,5 +1,6 @@
 package database.config;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -150,6 +151,31 @@ public class DatabaseConfig {
      */
     public void setPool(ConnectionPoolConfig pool) {
         this.pool = pool;
+    }
+    
+    /**
+     * 获取连接属性（字符串形式）
+     * 便于适配器以字符串方式读取连接配置
+     * 
+     * @return 连接属性映射
+     */
+    public Map<String, String> getConnectionProperties() {
+        Map<String, String> result = new HashMap<>();
+        if (properties != null) {
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                result.put(entry.getKey(), entry.getValue() == null ? null : String.valueOf(entry.getValue()));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取连接池配置（别名方法）
+     * 
+     * @return 连接池配置
+     */
+    public ConnectionPoolConfig getPoolConfig() {
+        return pool;
     }
     
     /**

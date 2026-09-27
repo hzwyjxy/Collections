@@ -4,9 +4,11 @@ import database.BlackholeStorageManager;
 import database.adapter.SQLiteAdapter;
 import database.config.ConfigurationManager;
 import database.core.DatabaseStorage;
+import database.core.Page;
 import database.core.RowMapper;
 import database.core.StorageException;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -149,15 +151,13 @@ public class SQLiteExample {
      * 创建用户表
      */
     private void createUserTable(DatabaseStorage adapter) throws StorageException {
-        String createTableSql = """
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name VARCHAR(100) NOT NULL,
-                email VARCHAR(100) UNIQUE NOT NULL,
-                age INTEGER,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """;
+        String createTableSql = "CREATE TABLE IF NOT EXISTS users ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "name VARCHAR(100) NOT NULL, "
+            + "email VARCHAR(100) UNIQUE NOT NULL, "
+            + "age INTEGER, "
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            + ")";
         
         adapter.update(createTableSql);
         System.out.println("用户表创建成功");
@@ -263,13 +263,13 @@ public class SQLiteExample {
         String querySql = "SELECT * FROM users ORDER BY id";
         
         // 查询第1页，每页3条
-        var page1 = adapter.queryPage(querySql, rowMapper, 1, 3);
+        Page<User> page1 = adapter.queryPage(querySql, rowMapper, 1, 3);
         System.out.println("第1页结果（共" + page1.getTotalElements() + "条，" + page1.getTotalPages() + "页）:");
         page1.getContent().forEach(System.out::println);
         
         // 查询第2页，每页3条
         if (page1.hasNext()) {
-            var page2 = adapter.queryPage(querySql, rowMapper, 2, 3);
+            Page<User> page2 = adapter.queryPage(querySql, rowMapper, 2, 3);
             System.out.println("第2页结果:");
             page2.getContent().forEach(System.out::println);
         }

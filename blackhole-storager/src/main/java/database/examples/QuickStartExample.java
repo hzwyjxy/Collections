@@ -1,11 +1,14 @@
 package database.examples;
 
 import database.BlackholeStorageManager;
+import database.adapter.RedisAdapter;
 import database.config.ConfigurationManager;
+import database.config.DatabaseConfig;
 import database.core.DatabaseStorage;
 import database.core.StorageException;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,14 +59,12 @@ public class QuickStartExample {
         System.out.println("3. 执行简单SQL操作...");
         
         // 创建表
-        String createTableSql = """
-            CREATE TABLE IF NOT EXISTS quick_start_demo (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name VARCHAR(100) NOT NULL,
-                value VARCHAR(200),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """;
+        String createTableSql = "CREATE TABLE IF NOT EXISTS quick_start_demo ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "name VARCHAR(100) NOT NULL, "
+            + "value VARCHAR(200), "
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            + ")";
         sqliteAdapter.update(createTableSql);
         System.out.println("创建表成功");
         
@@ -103,38 +104,34 @@ public class QuickStartExample {
     public void runConfigurationExample() throws IOException, StorageException {
         System.out.println("\n=== 配置管理示例 ===");
         
-        // 1. 创建配置管理器
-        System.out.println("1. 创建配置管理器...");
-        ConfigurationManager configManager = new ConfigurationManager();
+        // 1. 从classpath加载配置
+        System.out.println("1. 从classpath加载配置...");
+        ConfigurationManager.loadFromClasspath("database.yml");
         
-        // 2. 从classpath加载配置
-        System.out.println("2. 从classpath加载配置...");
-        configManager.loadFromClasspath("database.yml");
-        
-        // 3. 获取特定数据库配置
-        System.out.println("3. 获取数据库配置...");
-        var sqliteConfig = configManager.getConfiguration("sqlite-dev");
-        var mysqlConfig = configManager.getConfiguration("mysql-dev");
-        var redisConfig = configManager.getConfiguration("redis-dev");
+        // 2. 获取特定数据库配置
+        System.out.println("2. 获取数据库配置...");
+        DatabaseConfig sqliteConfig = ConfigurationManager.getConfig("sqlite-dev");
+        DatabaseConfig mysqlConfig = ConfigurationManager.getConfig("mysql-dev");
+        DatabaseConfig redisConfig = ConfigurationManager.getConfig("redis-dev");
         
         System.out.println("SQLite配置 - 类型: " + sqliteConfig.getType() + ", 名称: " + sqliteConfig.getName());
         System.out.println("MySQL配置 - 类型: " + mysqlConfig.getType() + ", 名称: " + mysqlConfig.getName());
         System.out.println("Redis配置 - 类型: " + redisConfig.getType() + ", 名称: " + redisConfig.getName());
         
-        // 4. 获取默认配置
-        var defaultConfig = configManager.getDefaultConfiguration();
+        // 3. 获取默认配置
+        DatabaseConfig defaultConfig = ConfigurationManager.getDefaultConfig();
         System.out.println("默认配置: " + defaultConfig.getName() + " (" + defaultConfig.getType() + ")");
         
-        // 5. 获取所有配置
-        var allConfigs = configManager.getAllConfigurations();
+        // 4. 获取所有配置
+        Map<String, DatabaseConfig> allConfigs = ConfigurationManager.getAllConfigs();
         System.out.println("所有配置数量: " + allConfigs.size());
         allConfigs.forEach((name, config) -> {
             System.out.println("  - " + name + ": " + config.getType());
         });
         
-        // 6. 重新加载配置
-        System.out.println("6. 重新加载配置...");
-        configManager.reload();
+        // 5. 重新加载配置
+        System.out.println("5. 重新加载配置...");
+        ConfigurationManager.loadFromClasspath("database.yml");
         System.out.println("配置重新加载完成");
         
         System.out.println("=== 配置管理示例完成 ===");
@@ -194,14 +191,12 @@ public class QuickStartExample {
         System.out.println("  SQLite - 创建表并插入数据...");
         
         // 创建表
-        String createTableSql = """
-            CREATE TABLE IF NOT EXISTS sqlite_demo (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                data_type VARCHAR(50) NOT NULL,
-                content TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """;
+        String createTableSql = "CREATE TABLE IF NOT EXISTS sqlite_demo ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "data_type VARCHAR(50) NOT NULL, "
+            + "content TEXT, "
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            + ")";
         adapter.update(createTableSql);
         
         // 插入数据
@@ -232,15 +227,13 @@ public class QuickStartExample {
         System.out.println("  MySQL - 创建表并插入数据...");
         
         // 创建表
-        String createTableSql = """
-            CREATE TABLE IF NOT EXISTS mysql_demo (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                data_type VARCHAR(50) NOT NULL,
-                content TEXT,
-                status VARCHAR(20) DEFAULT 'active',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """;
+        String createTableSql = "CREATE TABLE IF NOT EXISTS mysql_demo ("
+            + "id INT AUTO_INCREMENT PRIMARY KEY, "
+            + "data_type VARCHAR(50) NOT NULL, "
+            + "content TEXT, "
+            + "status VARCHAR(20) DEFAULT 'active', "
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            + ")";
         adapter.update(createTableSql);
         
         // 插入数据

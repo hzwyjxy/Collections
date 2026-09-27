@@ -7,6 +7,7 @@ import database.core.DatabaseStorage;
 import database.core.RowMapper;
 import database.core.StorageException;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -695,4 +696,7 @@ public class RedisExample {
             
             // 健康检查
             boolean isHealthy = redis.isHealthy();
-            System.out.println("健康状态: " + (isHealthy ? "健康" : "不健康"
+            System.out.println("健康状态: " + (isHealthy ? "健康" : "不健康"));
+        }
+    }
+}
