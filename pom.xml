@@ -16,11 +16,22 @@
         <module>single-player</module>
     </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- 覆盖 mysql-connector-j 传递引入的 protobuf-java(3.25.1)，修复 GHSA-735f-pc8j-v9w8 (CVE-2024-7254) -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.25.9</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20220320</version>
+            <version>20260814</version>
         </dependency>
     </dependencies>
 
