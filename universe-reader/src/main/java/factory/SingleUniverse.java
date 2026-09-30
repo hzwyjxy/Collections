@@ -10,6 +10,8 @@ import model.RequestType;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 单机下载器
@@ -26,7 +28,16 @@ public class SingleUniverse extends AbstractUniverse {
     public void create(int ThreadNum) {
         requestQueue = new ConcurrentLinkedQueue<>();
         responseQueue = new ConcurrentLinkedQueue<>();
-        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(ThreadNum);
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(ThreadNum, new ThreadFactory() {
+            private final AtomicInteger seq = new AtomicInteger();
+            @Override
+            public Thread newThread(Runnable r) {
+                // 守护线程：main 结束后 JVM 可正常退出，避免 while(true) 线程挂住进程
+                Thread t = new Thread(r, "universe-downloader-" + seq.incrementAndGet());
+                t.setDaemon(true);
+                return t;
+            }
+        });
         for (int i = 0; i < ThreadNum; i++) {
             fixedThreadPool.execute(new Runnable() {
                 @Override

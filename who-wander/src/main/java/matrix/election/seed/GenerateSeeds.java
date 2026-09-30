@@ -1,7 +1,9 @@
 package matrix.election.seed;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GenerateSeeds {
     static String factoryStr = "Electron\n" +
@@ -110,15 +112,16 @@ public class GenerateSeeds {
             "Ron DeSantis\n";
 
     public static List<String> getAllSeeds() {
-        ArrayList<String> list = new ArrayList<>();
+        // 使用 LinkedHashSet 去重（源文本存在重复项），同时保持原有顺序
+        Set<String> set = new LinkedHashSet<>();
         String[] factory = factoryStr.split("\n");
         String[] person = peopleStr.split("\n");
         for(String p : person) {
             for(String f : factory) {
-                list.add(p+" "+f);
+                set.add(p+" "+f);
             }
         }
-        return list;
+        return new ArrayList<>(set);
     }
 
     public static void main(String[] args) {

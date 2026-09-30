@@ -52,6 +52,11 @@
                     <groupId>org.eclipse.jetty.aggregate</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
+                <!-- 排除 Hive 传递进来的旧版 org.json 包，避免覆盖项目使用的 org.json:20220320 -->
+                <exclusion>
+                    <groupId>com.tdunning</groupId>
+                    <artifactId>json</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         

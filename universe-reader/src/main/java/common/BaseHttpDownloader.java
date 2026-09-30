@@ -28,7 +28,8 @@ public abstract class BaseHttpDownloader {
 
     static {
         DEFAULT_HEADERS.put("accept", "*/*");
-        DEFAULT_HEADERS.put("accept-encoding", "gzip, deflate, br, zstd");
+        //仅声明 HttpClient5 默认能解码的编码，勿加 br/zstd（无对应解码器会导致正文乱码）
+        DEFAULT_HEADERS.put("accept-encoding", "gzip, deflate");
         DEFAULT_HEADERS.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0");
     }
 
@@ -41,7 +42,8 @@ public abstract class BaseHttpDownloader {
                         //.setTlsVersions(TLS.V_1_2)
                         .build())
                 .setDefaultSocketConfig(SocketConfig.custom()
-                        .setSoTimeout(Timeout.ofSeconds(5))
+                        // 与响应超时(30s)对齐，避免长响应被过短的读超时截断
+                        .setSoTimeout(Timeout.ofSeconds(30))
                         .build())
                 .setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
                 .setConnPoolPolicy(PoolReusePolicy.LIFO)

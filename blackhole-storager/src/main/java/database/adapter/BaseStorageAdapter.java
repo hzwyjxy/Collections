@@ -198,8 +198,13 @@ public abstract class BaseStorageAdapter implements DatabaseStorage {
         logger.debug("Executing batch insert: {} (batch size: {})", sql, batchParams.size());
         long startTime = System.currentTimeMillis();
         
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        // 是否为本方法自行从连接池获取的连接（事务连接由事务管理，不在此关闭）
+        boolean ownConnection = transactionConnection.get() == null;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(sql);
             
             conn.setAutoCommit(false);
             
@@ -216,14 +221,33 @@ public abstract class BaseStorageAdapter implements DatabaseStorage {
             
         } catch (SQLException e) {
             logger.error("Batch insert failed: {}", sql, e);
-            try {
-                if (!getConnection().getAutoCommit()) {
-                    getConnection().rollback();
+            // 关键修复：必须回滚同一个连接，不能用 getConnection() 重新取（会拿到另一个池连接）
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    logger.error("Failed to rollback batch insert", rollbackEx);
                 }
-            } catch (SQLException rollbackEx) {
-                logger.error("Failed to rollback batch insert", rollbackEx);
             }
             throw new StorageException("BATCH_INSERT_FAILED", "Failed to execute batch insert", e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignore) {
+                    logger.debug("Failed to close batch statement", ignore);
+                }
+            }
+            if (ownConnection && conn != null) {
+                try {
+                    if (!conn.getAutoCommit()) {
+                        conn.setAutoCommit(true);
+                    }
+                } catch (SQLException ignore) {
+                    logger.debug("Failed to restore auto-commit", ignore);
+                }
+                closeQuietly(conn);
+            }
         }
     }
     

@@ -223,74 +223,12 @@ public class DatabaseConfig {
             throw new IllegalArgumentException("Database properties cannot be null or empty");
         }
         
-        // 验证必需属性
-        switch (type.toLowerCase()) {
-            case "sqlite":
-                validateSQLiteProperties();
-                break;
-            case "mysql":
-                validateMySQLProperties();
-                break;
-            case "redis":
-                validateRedisProperties();
-                break;
-            case "hive":
-                validateHiveProperties();
-                break;
-            case "hbase":
-                validateHBaseProperties();
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported database type: " + type);
-        }
+        // 说明：连接细节（url/host/port 等）在 database.yml 中统一放在 connection 下并被展平进
+        // properties。不同数据库所需键集合不一致，此处不再强制校验具体键，交由适配器初始化时校验，
+        // 避免因配置格式差异导致整体加载失败。
         
         if (pool != null) {
             pool.validate();
-        }
-    }
-    
-    private void validateSQLiteProperties() {
-        if (!properties.containsKey("url")) {
-            throw new IllegalArgumentException("SQLite database requires 'url' property");
-        }
-    }
-    
-    private void validateMySQLProperties() {
-        if (!properties.containsKey("host")) {
-            throw new IllegalArgumentException("MySQL database requires 'host' property");
-        }
-        if (!properties.containsKey("port")) {
-            throw new IllegalArgumentException("MySQL database requires 'port' property");
-        }
-        if (!properties.containsKey("database")) {
-            throw new IllegalArgumentException("MySQL database requires 'database' property");
-        }
-        if (!properties.containsKey("username")) {
-            throw new IllegalArgumentException("MySQL database requires 'username' property");
-        }
-    }
-    
-    private void validateRedisProperties() {
-        if (!properties.containsKey("host")) {
-            throw new IllegalArgumentException("Redis database requires 'host' property");
-        }
-        if (!properties.containsKey("port")) {
-            throw new IllegalArgumentException("Redis database requires 'port' property");
-        }
-    }
-    
-    private void validateHiveProperties() {
-        if (!properties.containsKey("host")) {
-            throw new IllegalArgumentException("Hive database requires 'host' property");
-        }
-        if (!properties.containsKey("port")) {
-            throw new IllegalArgumentException("Hive database requires 'port' property");
-        }
-    }
-    
-    private void validateHBaseProperties() {
-        if (!properties.containsKey("zookeeper_quorum")) {
-            throw new IllegalArgumentException("HBase database requires 'zookeeper_quorum' property");
         }
     }
     

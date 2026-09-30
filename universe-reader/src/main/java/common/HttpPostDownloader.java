@@ -15,8 +15,9 @@ public class HttpPostDownloader extends BaseHttpDownloader {
         try {
             String url = httpRequest.getUrl();
             HttpPost httpPost = new HttpPost(url);
-            //设置post内容
-            StringEntity stringEntity = new StringEntity(httpRequest.getBody().toString(), ContentType.APPLICATION_JSON);
+            //设置post内容（body 为空时发送空体，避免 NPE）
+            String payload = httpRequest.getBody() == null ? "" : httpRequest.getBody().toString();
+            StringEntity stringEntity = new StringEntity(payload, ContentType.APPLICATION_JSON);
             httpPost.setEntity(stringEntity);
             applyHeaders(httpPost, httpRequest);
             CloseableHttpResponse response = client.execute(httpPost);
@@ -34,6 +35,8 @@ public class HttpPostDownloader extends BaseHttpDownloader {
     public final static void main(final String[] args) throws Exception {
         String url ="https://www.baidu.com";
         HttpRequest httpRequest = new HttpRequest("POST","");
+        httpRequest.setUrl(url);
+        httpRequest.setBody(new org.json.JSONObject());
         HttpResponse httpResponse = HttpPostDownloader.post(httpRequest);
         System.out.println(httpResponse.getResultPage());
     }

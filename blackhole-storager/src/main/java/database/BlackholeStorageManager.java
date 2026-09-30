@@ -93,8 +93,8 @@ public class BlackholeStorageManager {
                         adapters.put(name, adapter);
                         logger.info("Created adapter for database: {} (type: {})", name, config.getType());
                     } catch (StorageException e) {
-                        logger.error("Failed to create adapter for database: {} (type: {})", name, config.getType(), e);
-                        throw e;
+                        // 单个库初始化失败（如外部服务不可达）不应阻断整体启动，降级跳过并告警
+                        logger.warn("跳过初始化失败的数据库 {} (type: {}): {}", name, config.getType(), e.getMessage());
                     }
                 } else {
                     logger.info("Skipping disabled database: {} (type: {})", name, config.getType());
@@ -140,8 +140,8 @@ public class BlackholeStorageManager {
                         adapters.put(name, adapter);
                         logger.info("Created adapter for database: {} (type: {})", name, config.getType());
                     } catch (StorageException e) {
-                        logger.error("Failed to create adapter for database: {} (type: {})", name, config.getType(), e);
-                        throw e;
+                        // 单个库初始化失败（如外部服务不可达）不应阻断整体启动，降级跳过并告警
+                        logger.warn("跳过初始化失败的数据库 {} (type: {}): {}", name, config.getType(), e.getMessage());
                     }
                 } else {
                     logger.info("Skipping disabled database: {} (type: {})", name, config.getType());

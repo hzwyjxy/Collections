@@ -1,14 +1,19 @@
 package database.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -23,9 +28,13 @@ public class ConfigurationManager {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationManager.class);
     
     /**
-     * YAML文件映射器
+     * YAML文件映射器。
+     * database.yml 使用 snake_case 命名，且可能包含框架未知字段，因此：
+     * 1) 关闭未知字段报错；2) 使用 SNAKE_CASE 命名策略映射到 camelCase 字段。
      */
-    private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     
     /**
      * 配置文件缓存
@@ -59,20 +68,8 @@ public class ConfigurationManager {
             throw new IOException("Configuration file not found: " + configFilePath);
         }
         
-        try {
-            ConfigWrapper wrapper = yamlMapper.readValue(configFile, ConfigWrapper.class);
-            Map<String, DatabaseConfig> configs = wrapper.getDatabases();
-            globalConfig = wrapper.getGlobal();
-            
-            // 验证配置
-            validateConfigs(configs);
-            
-            // 缓存配置
-            configCache.putAll(configs);
-            
-            logger.info("Successfully loaded {} database configurations", configs.size());
-            return configs;
-            
+        try (InputStream inputStream = new FileInputStream(configFile)) {
+            return parseAndCache(inputStream, configFilePath);
         } catch (IOException e) {
             logger.error("Failed to load configuration from file: {}", configFilePath, e);
             throw new IOException("Failed to load configuration from file: " + configFilePath, e);
@@ -94,16 +91,7 @@ public class ConfigurationManager {
                 throw new IOException("Configuration resource not found in classpath: " + resourcePath);
             }
             
-            ConfigWrapper wrapper = yamlMapper.readValue(inputStream, ConfigWrapper.class);
-            Map<String, DatabaseConfig> configs = wrapper.getDatabases();
-            globalConfig = wrapper.getGlobal();
-            
-            // 验证配置
-            validateConfigs(configs);
-            
-            // 缓存配置
-            configCache.putAll(configs);
-            
+            Map<String, DatabaseConfig> configs = parseAndCache(inputStream, resourcePath);
             logger.info("Successfully loaded {} database configurations from classpath", configs.size());
             return configs;
             
@@ -111,6 +99,78 @@ public class ConfigurationManager {
             logger.error("Failed to load configuration from classpath: {}", resourcePath, e);
             throw new IOException("Failed to load configuration from classpath: " + resourcePath, e);
         }
+    }
+    
+    /**
+     * 解析配置流并写入缓存。
+     * 兼容两种结构：
+     * 1) 顶层直接是库配置项（database.yml 现状），如 sqlite-dev / mysql-dev ...
+     * 2) 顶层使用 databases: 包裹（旧约定）
+     * 同时把 connection 子节点（含其 properties）展平进 DatabaseConfig.properties，
+     * 因为适配器是从 properties 读取 url 等连接信息的。
+     */
+    private static Map<String, DatabaseConfig> parseAndCache(InputStream inputStream, String source) throws IOException {
+        Map<String, Object> root = yamlMapper.readValue(inputStream, new TypeReference<Map<String, Object>>() {
+        });
+        
+        globalConfig = root.get("global") == null
+                ? new GlobalConfig()
+                : yamlMapper.convertValue(root.get("global"), GlobalConfig.class);
+        
+        Map<String, Object> dbNodes = new LinkedHashMap<>();
+        Object databasesNode = root.get("databases");
+        if (databasesNode instanceof Map) {
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) databasesNode).entrySet()) {
+                dbNodes.put(String.valueOf(entry.getKey()), entry.getValue());
+            }
+        } else {
+            for (Map.Entry<String, Object> entry : root.entrySet()) {
+                if ("global".equals(entry.getKey()) || "databases".equals(entry.getKey())) {
+                    continue;
+                }
+                if (entry.getValue() instanceof Map) {
+                    dbNodes.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        
+        Map<String, DatabaseConfig> configs = new HashMap<>();
+        for (Map.Entry<String, Object> entry : dbNodes.entrySet()) {
+            String name = entry.getKey();
+            Map<String, Object> node = asMap(entry.getValue());
+            DatabaseConfig config = yamlMapper.convertValue(node, DatabaseConfig.class);
+            
+            // 展平 connection 节点：connection.url/driver_class/... 及其 properties 都并入 properties
+            Object connectionNode = node.get("connection");
+            if (connectionNode instanceof Map) {
+                Map<String, Object> props = new LinkedHashMap<>();
+                Map<String, Object> connection = new LinkedHashMap<>(asMap(connectionNode));
+                Object nestedProps = connection.remove("properties");
+                props.putAll(connection);
+                if (nestedProps instanceof Map) {
+                    props.putAll(asMap(nestedProps));
+                }
+                if (config.getProperties() != null) {
+                    props.putAll(config.getProperties());
+                }
+                config.setProperties(props);
+            }
+            if (config.getName() == null || config.getName().trim().isEmpty()) {
+                config.setName(name);
+            }
+            configs.put(name, config);
+        }
+        
+        validateConfigs(configs);
+        configCache.clear();
+        configCache.putAll(configs);
+        logger.info("Successfully loaded {} database configurations from {}", configs.size(), source);
+        return configs;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> asMap(Object value) {
+        return value instanceof Map ? (Map<String, Object>) value : new LinkedHashMap<>();
     }
     
     /**
@@ -223,34 +283,9 @@ public class ConfigurationManager {
     }
     
     /**
-     * 配置包装器类
-     * 用于YAML文件的根结构
-     */
-    private static class ConfigWrapper {
-        private Map<String, DatabaseConfig> databases;
-        private GlobalConfig global;
-        
-        public Map<String, DatabaseConfig> getDatabases() {
-            return databases != null ? databases : new HashMap<>();
-        }
-        
-        public void setDatabases(Map<String, DatabaseConfig> databases) {
-            this.databases = databases;
-        }
-        
-        public GlobalConfig getGlobal() {
-            return global != null ? global : new GlobalConfig();
-        }
-        
-        public void setGlobal(GlobalConfig global) {
-            this.global = global;
-        }
-    }
-    
-    /**
      * 全局配置类
      */
-    private static class GlobalConfig {
+    static class GlobalConfig {
         private String defaultDatabase;
         private boolean healthCheckEnabled = true;
         private long healthCheckInterval = 30000; // 30秒

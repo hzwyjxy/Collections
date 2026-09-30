@@ -4,6 +4,9 @@ public class Category {
 
     public static final String DMHY_LIST_PAGE="DMHY_LIST_PAGE";
 
+    //AI 大模型页面解析（Category 可由 ai.properties 的 ai.category 覆盖）
+    public static final String AI_PAGE_STRUCT="AI_PAGE_STRUCT";
+
     public static final String ELECTION_CNN_SEARCH="ELECTION_CNN_SEARCH";
     public static final String ELECTION_CNN_DETAIL="ELECTION_CNN_DETAIL";
 
